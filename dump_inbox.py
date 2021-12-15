@@ -46,7 +46,7 @@ if __name__ == '__main__':
     config = Settings()
 
     client = EvernoteClient(
-        token=config.EVERNOTE_PERSONAL_TOKEN,
+        token=config.EVERNOTE_DEVELOPER_TOKEN,
         sandbox=config.SANDBOX,
     )
     note_store = client.get_note_store()
