@@ -15,4 +15,4 @@ if __name__ == '__main__':
     notebooks = note_store.listNotebooks()
 
     for notebook in notebooks:
-        print('%s - %s' % (notebook.guid, notebook.name))
+        print(f'{notebook.guid} - {notebook.name}')

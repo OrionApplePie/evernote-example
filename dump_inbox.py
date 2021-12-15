@@ -1,15 +1,15 @@
 #!/usr/bin/env python 
 import argparse
 
-from evernote.api.client import EvernoteClient
-from evernote.api.client import NoteStore
 from bs4 import BeautifulSoup
+from evernote.api.client import EvernoteClient, NoteStore
 
 from config import Settings
 
-    
+
 def get_notebook_list(note_store, notebook_guid, number=10, offset=0):
     _filter = NoteStore.NoteFilter(notebookGuid=notebook_guid)
+
     resultSpec = NoteStore.NotesMetadataResultSpec(
         includeTitle=True,
         includeContentLength=True,
@@ -23,13 +23,19 @@ def get_notebook_list(note_store, notebook_guid, number=10, offset=0):
         includeLargestResourceMime=True,
         includeLargestResourceSize=True,
     )
-
     # this determines which info you'll get for each note
-    return note_store.findNotesMetadata(_filter, offset, number, resultSpec);
+    return note_store.findNotesMetadata(
+        _filter,
+        offset,
+        number,
+        resultSpec,
+    )
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description=u'Dumps notes from Evernote inbox to console')
+    parser = argparse.ArgumentParser(
+        description='Dumps notes from Evernote inbox to console'
+    )
     parser.add_argument('number',
                         nargs='?',
                         type=int,
@@ -44,13 +50,18 @@ if __name__ == '__main__':
         sandbox=config.SANDBOX,
     )
     note_store = client.get_note_store()
-
-    notes = get_notebook_list(note_store, config.INBOX_NOTEBOOK_GUID, args.number).notes
+    notes = get_notebook_list(
+        note_store,
+        config.INBOX_NOTEBOOK_GUID,
+        args.number
+    ).notes
 
     # print('Notes', notes)
-    
+
     for counter, note in enumerate(notes, start=1):
-        print('\n--------- %s ---------' % counter)
-        content = note_store.getNoteContent(note.guid)  # kwargs will be skipped by api because of bug
-        soup = BeautifulSoup(content, "html.parser")
+        print(f'\n--------- {counter} ---------')
+
+        # kwargs will be skipped by api because of bug
+        content = note_store.getNoteContent(note.guid)
+        soup = BeautifulSoup(content, 'html.parser')
         print(soup.get_text())
