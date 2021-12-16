@@ -39,10 +39,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Adds note to notebook "Дневник", uses template note'
     )
-    parser.add_argument('date',
+    parser.add_argument('-date',
                         nargs='?',
                         type=is_valid_date,
                         help='date in format "YYYY-MM-DD"')
+
+    parser.add_argument('-message',
+                        type=str,
+                        help='Text message for note.')
+
     args = parser.parse_args()
 
     config = Settings()
@@ -70,9 +75,18 @@ if __name__ == '__main__':
         config.JOURNAL_TEMPLATE_NOTE_GUID,
         config.JOURNAL_NOTEBOOK_GUID
     )
+
     utitle_without_comment = new_note.title.split('#', 1)[0]
     utitle = utitle_without_comment.strip().format(**context)
     new_note.title = utitle
+
+    text = args.message
+    new_note.content = '<?xml version="1.0" encoding="UTF-8"?>'
+    new_note.content += '<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">'
+    new_note.content += '<en-note>'
+    new_note.content += f'<div>{text}</div>'
+    new_note.content += '</en-note>'
+
     noteStore.updateNote(new_note)
 
     print(f'Note created: {utitle}')
