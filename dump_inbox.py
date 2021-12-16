@@ -17,7 +17,7 @@ def get_notebook_list(note_store, notebook_guid, number=10, offset=0):
         includeUpdated=True,
         includeDeleted=False,
         includeUpdateSequenceNum=True,
-        includeNotebookGuid=False,
+        includeNotebookGuid=True,
         includeTagGuids=True,
         includeAttributes=True,
         includeLargestResourceMime=True,
@@ -33,17 +33,24 @@ def get_notebook_list(note_store, notebook_guid, number=10, offset=0):
 
 
 if __name__ == '__main__':
+    config = Settings()
+
     parser = argparse.ArgumentParser(
         description='Dumps notes from Evernote inbox to console'
     )
-    parser.add_argument('number',
+    parser.add_argument('-number',
                         nargs='?',
                         type=int,
                         default=10,
                         help='number of records to dump')
+
+    parser.add_argument('-notebook_id',
+                        type=str,
+                        default=config.INBOX_NOTEBOOK_GUID,
+                        help='Target notebook guid.')
+
     args = parser.parse_args()
 
-    config = Settings()
     dev_token = (
         config.EVERNOTE_SANDBOX_DEVELOPER_TOKEN
         if config.SANDBOX
@@ -57,15 +64,16 @@ if __name__ == '__main__':
     note_store = client.get_note_store()
     notes = get_notebook_list(
         note_store,
-        config.INBOX_NOTEBOOK_GUID,
-        args.number
+        args.notebook_id,
+        args.number,
     ).notes
 
     # print('Notes', notes)
 
     for counter, note in enumerate(notes, start=1):
         print(f'\n--------- {counter} ---------')
-
+        print(f'Note id: {note.guid}')
+        print(f'Note title: {note.title}')
         # kwargs will be skipped by api because of bug
         content = note_store.getNoteContent(note.guid)
         soup = BeautifulSoup(content, 'html.parser')
