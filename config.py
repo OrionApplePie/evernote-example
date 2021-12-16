@@ -4,9 +4,8 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     SANDBOX: bool
 
-    EVERNOTE_CONSUMER_KEY: str
-    EVERNOTE_CONSUMER_SECRET: str
-    EVERNOTE_DEVELOPER_TOKEN: str
+    EVERNOTE_SANDBOX_DEVELOPER_TOKEN: str
+    EVERNOTE_PRODUCTION_DEVELOPER_TOKEN: str
 
     JOURNAL_TEMPLATE_NOTE_GUID: str
     JOURNAL_NOTEBOOK_GUID: str
